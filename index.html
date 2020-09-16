@@ -3,7 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Register for Full Stack Conf</title>
+  <title>Register for Full Stack Conf</title>
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/reset.css">
 	<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -21,9 +23,11 @@
         
         <label for="name">Name:</label>
         <input type="text" id="name" name="user-name">
+        <label id="name-error" class="error">* Enter valid username</label>
         
         <label for="mail">Email:</label>
         <input type="email" id="mail" name="user-email">
+        <label id="mail-error" class="error">* Enter valid email <address></address></label>
         
         <label for="title">Job Role</label>
         <select id="title" name="user-title">
@@ -33,7 +37,10 @@
           <option value="designer">Designer</option>          
           <option value="student">Student</option>
           <option value="other">Other</option>  
-        </select>           
+        </select>
+        
+        <input type="text" id="other-title" placeholder="Your Job Role">
+        <label id="other-title-error" class="error">* Enter valid job role</label>
       </fieldset>
       
       <fieldset class="shirt">
@@ -62,6 +69,7 @@
           <div id="shirt-colors" class="shirt-colors">
             <label for="color">Color:</label>
             <select id="color">
+              <option value="warning" hidden="true">Please select a T-Shirt theme</option>
               <option value="cornflowerblue">Cornflower Blue (JS Puns shirt only)</option>
               <option value="darkslategrey">Dark Slate Grey (JS Puns shirt only)</option> 
               <option value="gold">Gold (JS Puns shirt only)</option>
@@ -72,6 +80,8 @@
           </div>
         </div>               
       </fieldset>
+      <label id="design-error" class="error">* Select a design</label>
+      
 
       <fieldset class="activities">
         <legend>Register for Activities</legend>
@@ -102,14 +112,16 @@
             <input type="checkbox" name="npm" data-day-and-time="Wednesday 1pm-4pm" data-cost="100"> 
             npm Workshop — Wednesday 1pm-4pm, $100
           </label>
-                  	
+          <label id="activties-error" class="error">* Select an activity</label>
+          <label id="totalAmount"></label>   	
       </fieldset>
+
       <fieldset>
         <legend>Payment Info</legend>
 
         <label for="payment">I'm going to pay with:</label>
         <select id="payment" name="user-payment">
-          <option value="select method">Select Payment Method</option>
+          <option value="select method" disabled>Select Payment Method</option>
           <option value="credit card">Credit Card</option>
           <option value="paypal">PayPal</option>
           <option value="bitcoin">Bitcoin</option>
@@ -132,6 +144,10 @@
             <input id="cvv" name="user-cvv" type="text"> 
           </div>
 
+          <label id="ccnumber-error" class="error">* Credit card must be 13 - 16 digits</label>
+          <label id="zip-error" class="error">* Zip code must be 5 digits</label>
+          <label id="cvv-error" class="error">* CVV must be 3 digits</label>
+
           <label for="exp-month">Expiration Date:</label>
           <select id="exp-month" name="user-exp-month">
             <option value="1">1 - January</option>
@@ -147,6 +163,7 @@
             <option value="11">11 - November</option>	
             <option value="12">12 - December</option>          		          
           </select>
+
           <label for="exp-year">Expiration Year:</label>
           <select id="exp-year" name="user-exp-year">
             <option value="2016">2016</option>

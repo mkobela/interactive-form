@@ -180,6 +180,14 @@ option {
   clear: both;
 }
 
+.error {
+	font-size: 1.5em;
+	margin-top: -15px;
+	margin-bottom: 10px;
+	color: red;
+	display: none;
+}
+
 /* ================================= 
   Media Queries
 ==================================== */
