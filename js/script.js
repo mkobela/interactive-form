@@ -15,6 +15,7 @@ const jobRoleInput = document.getElementById('title');
 const otherInput = document.getElementById('other-title');
 const sizeInput = document.getElementById("size");
 const designInput = document.getElementById('design');
+const shirtDiv = document.getElementById('shirt-colors')
 const colorInput = document.getElementById('color');
 const activities = document.querySelector('.activities');
 const payment = document.querySelector('#payment');
@@ -24,7 +25,7 @@ const ccCVV = document.querySelector('#cvv');
 
 // get validation error elememts from HTML
 let nameError = document.getElementById('name-error');
-let mailError = document.getElementById('mail-error');
+let emailError = document.getElementById('mail-error');
 let otherTitleError = document.getElementById('other-title-error');
 let designError = document.getElementById('design-error');
 let activitiesError = document.getElementById('activties-error');
@@ -132,56 +133,78 @@ function isValidCVV(cvv) {
  * @returns {boolean} - true if valid
 ***/
 function validateForm() {
-  isFormValid = true;
-
-  function validate(validator, value, element){
-    if (!validator(value)) {
-      isFormValid = false;
-      element.style.display = 'block';
-    }else{
-      element.style.display = 'none';
-    }
-  }
+  let isFormValid = true;
 
   // validate user name input
-  validate(isValidUsername, usernameInput.value, nameError);
+  isFormValid &= validate(isValidUsername, usernameInput.value, nameError);
 
   // validate email input
-  validate(isValidEmail, emailInput.value, mailError);
+  isFormValid &= validate(isValidEmail, emailInput.value, emailError);
 
   // validate job role
   if(jobRoleInput.value === 'other'){
-     validate(isValidJobRole, otherInput.value, otherTitleError);
+    isFormValid &= validate(isValidJobRole, otherInput.value, otherTitleError);
   }
 
   // validate design
-  validate(isValidDesign, designInput.selectedIndex, designError)
+  isFormValid &= validate(isValidDesign, designInput.selectedIndex, designError)
 
   // validate registration
-  validate(isValidRegistration, '', activitiesError);
+  isFormValid &= validate(isValidRegistration, '', activitiesError);
 
   // validate credit card information
-  validate(isValidCCNumber, ccNumber.value, ccNumberError);
   if (payment.value === 'credit card') {
-    // validate number
-    validate(isValidCCNumber, ccNumber.value, ccNumberError);
+    // validate number, use conditional messages
+    if (!validate(isValidCCNumber, ccNumber.value, ccNumberError)){
+      isFormValid &= true;
+
+      if(ccNumber.value.length == 0){
+        ccNumberError.innerHTML = '* Please enter a credit card number';
+      }else{
+        ccNumberError.innerHTML = '* Please enter a number that is 13 to 16 digits long';
+      }
+    }
 
     // validate zip code
-    validate(isValidCCZip, ccZip.value, ccZipError);
+    isFormValid &= validate(isValidCCZip, ccZip.value, ccZipError);
 
     // validate CVV number
-    validate(isValidCVV, ccCVV.value, ccCVVError);
+    isFormValid &= validate(isValidCVV, ccCVV.value, ccCVVError);
   }
 
   return isFormValid;
 }
 
+/***
+ * @function validtor - helper function to set css display
+ * @param {function} - validatior function
+ * @param {string} - element value
+ * @param {element} - HTML element
+***/
+function validate(validator, value, element){
+  let isFieldValid = false;
+
+  if (validator(value)) {
+    isFieldValid = true;
+    element.style.display = 'none';
+  }else{
+    element.style.display = 'block';
+  }
+
+  return isFieldValid;
+}
 
 /**
  * 
  * SET UP EVENTS
  * 
  */
+
+ // add listener on email input
+ emailInput.addEventListener('input', (e) =>{
+  // show email validation real-time
+  validate(isValidEmail, emailInput.value, emailError);
+});
 
 // add listener on job role title
 jobRoleInput.addEventListener("change", () => {
@@ -197,16 +220,19 @@ jobRoleInput.addEventListener("change", () => {
   }
 });
 
+// add listener on design element
 designInput.addEventListener("change", (e) => {
 
   const selectedDesignIndex = e.target.selectedIndex;
   processColorList(selectedDesignIndex);
 });
 
+// add listener on activities eleent
 activities.addEventListener("change", (e) => {
   processActivities(e);
 });
 
+// add listener on credit card element
 payment.addEventListener("change", (e) => {
 
   const paymentOptions = e.target.options;
@@ -214,6 +240,7 @@ payment.addEventListener("change", (e) => {
   processPayment(selectedOption);
 });
 
+// add listener on submit button
 form.addEventListener("submit", (e) => {
   // validate form values
   if (!validateForm()) {
@@ -232,19 +259,18 @@ function processPayment(selectedOption) {
   const paypalDiv = document.querySelector('#paypal');
   const bitcoinDiv = document.querySelector('#bitcoin');
 
+  function setDisplayFields(ccDisplay, ppDisplay, bcDisplay){
+    creditDiv.style.display = ccDisplay;
+    paypalDiv.style.display = ppDisplay;
+    bitcoinDiv.style.display = bcDisplay;
+  }
 
   if (selectedOption.value === 'credit card') {
-    creditDiv.style.display = 'block';
-    paypalDiv.style.display = 'none';
-    bitcoinDiv.style.display = 'none';
+    setDisplayFields('block', 'none', 'none');
   } else if (selectedOption.value === 'paypal') {
-    creditDiv.style.display = 'none';
-    paypalDiv.style.display = 'block';
-    bitcoinDiv.style.display = 'none';
+    setDisplayFields('none', 'block', 'none');
   } else if (selectedOption.value === 'bitcoin') {
-    creditDiv.style.display = 'none';
-    paypalDiv.style.display = 'none';
-    bitcoin.style.display = 'block';
+    setDisplayFields('none', 'none', 'block');
   }
 }
 
@@ -312,6 +338,14 @@ function processColorList(selectedDesignIndex) {
   const colorOptions = colorInput.options;
   let isOptionSelected = false;
 
+  function showOptions(condition, index){
+    if (condition) {
+      showOption(index, true);
+    } else {
+      showOption(index, false);
+    }
+  }
+
   function showOption(index, show) {
     if (show) {
       // remove hidden attribute
@@ -333,29 +367,18 @@ function processColorList(selectedDesignIndex) {
     if (selectedDesignIndex === 0) {
 
       // no theme selected, hide all options except warning
-      if( i == 0){
-        showOption(0, true);
-      }else{
-        // colorOptions[i].hidden = true;
-        // colorOptions[i].selected = 'false';
-        showOption(i, false);
-      }
+      showOptions(i == 0, i);
+      shirtDiv.style.display = 'none';
     } else if (selectedDesignIndex === 1) {
-
+     
       // Puns theme selected
-      if (colorOptions[i].innerHTML.includes('JS Puns')) {
-        showOption(i, true);
-      } else {
-        showOption(i, false);
-      }
+      shirtDiv.style.display = 'block';
+      showOptions(colorOptions[i].innerHTML.includes('JS Puns'), i)
     } else if (selectedDesignIndex === 2) {
-
+        
       // Love theme selected
-      if (colorOptions[i].innerHTML.includes('JS shirt')) {
-        showOption(i, true);
-      } else {
-        showOption(i, false);
-      }
+      shirtDiv.style.display = 'block';
+      showOptions(colorOptions[i].innerHTML.includes('JS shirt'), i)
     }
   }
 }
