@@ -12,26 +12,8 @@ const form = document.querySelector('form');
 const usernameInput = document.getElementById('name');
 const emailInput = document.getElementById('mail');
 const jobRoleInput = document.getElementById('title');
-const otherInput = document.getElementById('other-title');
-const sizeInput = document.getElementById("size");
+const otherJobInput = document.getElementById('other-title');
 const designInput = document.getElementById('design');
-const shirtDiv = document.getElementById('shirt-colors')
-const colorInput = document.getElementById('color');
-const activities = document.querySelector('.activities');
-const payment = document.querySelector('#payment');
-const ccNumber = document.querySelector('#cc-num');
-const ccZip = document.querySelector('#zip');
-const ccCVV = document.querySelector('#cvv');
-
-// get validation error elememts from HTML
-let nameError = document.getElementById('name-error');
-let emailError = document.getElementById('mail-error');
-let otherTitleError = document.getElementById('other-title-error');
-let designError = document.getElementById('design-error');
-let activitiesError = document.getElementById('activties-error');
-let ccNumberError = document.getElementById('ccnumber-error');
-let ccZipError = document.getElementById('zip-error');
-let ccCVVError = document.getElementById('cvv-error');
 
 /**
  * 
@@ -45,7 +27,7 @@ let ccCVVError = document.getElementById('cvv-error');
  * @returns {boolean} - true if valid
 ***/
 function isValidUsername(username) {
-  let isValid = (username.length === 0) ? false : true;
+  const isValid = (username.length === 0) ? false : true;
   return isValid;
 }
 
@@ -64,7 +46,7 @@ function isValidEmail(email) {
  * @returns {boolean} - true if valid
 ***/
 function isValidJobRole(otherJob) {
-  let isValid = (otherJob.length === 0) ? false : true;
+  const isValid = (otherJob.length === 0) ? false : true;
   return isValid;
 }
 
@@ -74,7 +56,7 @@ function isValidJobRole(otherJob) {
  * @returns {boolean} - true if valid
 ***/
 function isValidDesign(index) {
-  let isValid = (index === 0) ? false : true;
+  const isValid = (index === 0) ? false : true;
   return isValid;
 }
 
@@ -133,42 +115,57 @@ function isValidCVV(cvv) {
  * @returns {boolean} - true if valid
 ***/
 function validateForm() {
+
   let isFormValid = true;
 
   // validate user name input
+  const nameError = document.getElementById('name-error');
   isFormValid &= validate(isValidUsername, usernameInput.value, nameError);
 
   // validate email input
+  const emailError = document.getElementById('mail-error');
   isFormValid &= validate(isValidEmail, emailInput.value, emailError);
 
   // validate job role
-  if(jobRoleInput.value === 'other'){
-    isFormValid &= validate(isValidJobRole, otherInput.value, otherTitleError);
+  const otherTitleError = document.getElementById('other-title-error');
+  if (jobRoleInput.value === 'other') {
+    isFormValid &= validate(isValidJobRole, otherJobInput.value, otherTitleError);
   }
 
   // validate design
+  const designError = document.getElementById('design-error');
   isFormValid &= validate(isValidDesign, designInput.selectedIndex, designError)
 
   // validate registration
+  const activitiesError = document.getElementById('activties-error');
   isFormValid &= validate(isValidRegistration, '', activitiesError);
 
+
   // validate credit card information
+  const payment = document.querySelector('#payment');
   if (payment.value === 'credit card') {
+    const ccNumberError = document.getElementById('ccnumber-error');
+
     // validate number, use conditional messages
-    if (!validate(isValidCCNumber, ccNumber.value, ccNumberError)){
+    const ccNumber = document.querySelector('#cc-num');
+    if (!validate(isValidCCNumber, ccNumber.value, ccNumberError)) {
       isFormValid &= true;
 
-      if(ccNumber.value.length == 0){
+      if (ccNumber.value.length == 0) {
         ccNumberError.innerHTML = '* Please enter a credit card number';
-      }else{
+      } else {
         ccNumberError.innerHTML = '* Please enter a number that is 13 to 16 digits long';
       }
     }
 
     // validate zip code
+    const ccZip = document.querySelector('#zip');
+    const ccZipError = document.getElementById('zip-error');
     isFormValid &= validate(isValidCCZip, ccZip.value, ccZipError);
 
     // validate CVV number
+    const ccCVV = document.querySelector('#cvv');
+    const ccCVVError = document.getElementById('cvv-error');
     isFormValid &= validate(isValidCVV, ccCVV.value, ccCVVError);
   }
 
@@ -181,13 +178,13 @@ function validateForm() {
  * @param {string} - element value
  * @param {element} - HTML element
 ***/
-function validate(validator, value, element){
+function validate(validator, value, element) {
   let isFieldValid = false;
 
   if (validator(value)) {
     isFieldValid = true;
     element.style.display = 'none';
-  }else{
+  } else {
     element.style.display = 'block';
   }
 
@@ -200,23 +197,24 @@ function validate(validator, value, element){
  * 
  */
 
- // add listener on email input
- emailInput.addEventListener('input', (e) =>{
+// add listener on email input
+emailInput.addEventListener('input', (e) => {
   // show email validation real-time
+  const emailError = document.getElementById('mail-error');
   validate(isValidEmail, emailInput.value, emailError);
 });
 
 // add listener on job role title
 jobRoleInput.addEventListener("change", () => {
   // get selected title option
-  let selectedOption = jobRoleInput.value;
+  const selectedOption = jobRoleInput.value;
 
   if (selectedOption === 'other') {
     //show other title input
-    otherInput.style.display = "block";
+    otherJobInput.style.display = "block";
   } else {
     // hide other title input
-    otherInput.style.display = "none";
+    otherJobInput.style.display = "none";
   }
 });
 
@@ -228,6 +226,7 @@ designInput.addEventListener("change", (e) => {
 });
 
 // add listener on activities eleent
+const activities = document.querySelector('.activities');
 activities.addEventListener("change", (e) => {
   processActivities(e);
 });
@@ -259,7 +258,7 @@ function processPayment(selectedOption) {
   const paypalDiv = document.querySelector('#paypal');
   const bitcoinDiv = document.querySelector('#bitcoin');
 
-  function setDisplayFields(ccDisplay, ppDisplay, bcDisplay){
+  function setDisplayFields(ccDisplay, ppDisplay, bcDisplay) {
     creditDiv.style.display = ccDisplay;
     paypalDiv.style.display = ppDisplay;
     bitcoinDiv.style.display = bcDisplay;
@@ -290,8 +289,8 @@ function processActivities(e) {
     // ignore box being checked
     if (selectedCheckbox.name !== checkboxList[i].name) {
       // check if any other box matches selected date
-      let a1 = selectedCheckbox.getAttribute('data-day-and-time');
-      let a2 = checkboxList[i].getAttribute('data-day-and-time');
+      const a1 = selectedCheckbox.getAttribute('data-day-and-time');
+      const a2 = checkboxList[i].getAttribute('data-day-and-time');
 
       // check if events have same time
       if (a1 === a2) {
@@ -314,10 +313,10 @@ function processActivities(e) {
   }
 
   // get total amount element and update $
-  let totalAmountElement = document.querySelector('#totalAmount');
+  const totalAmountElement = document.querySelector('#totalAmount');
 
   if (total > 0) {
-    let displayAmount = `
+    const displayAmount = `
       <label id="totalAmt">
       $${total}
       </label>
@@ -335,10 +334,11 @@ function processActivities(e) {
 ***/
 function processColorList(selectedDesignIndex) {
 
+  const colorInput = document.getElementById('color');
   const colorOptions = colorInput.options;
   let isOptionSelected = false;
 
-  function showOptions(condition, index){
+  function showOptions(condition, index) {
     if (condition) {
       showOption(index, true);
     } else {
@@ -363,6 +363,7 @@ function processColorList(selectedDesignIndex) {
   }
 
   // show color options that match selected design
+  const shirtDiv = document.getElementById('shirt-colors')
   for (let i = 0; i < colorOptions.length; i++) {
     if (selectedDesignIndex === 0) {
 
@@ -370,12 +371,12 @@ function processColorList(selectedDesignIndex) {
       showOptions(i == 0, i);
       shirtDiv.style.display = 'none';
     } else if (selectedDesignIndex === 1) {
-     
+
       // Puns theme selected
       shirtDiv.style.display = 'block';
       showOptions(colorOptions[i].innerHTML.includes('JS Puns'), i)
     } else if (selectedDesignIndex === 2) {
-        
+
       // Love theme selected
       shirtDiv.style.display = 'block';
       showOptions(colorOptions[i].innerHTML.includes('JS shirt'), i)
@@ -383,15 +384,14 @@ function processColorList(selectedDesignIndex) {
   }
 }
 
-function setDefaultJobRole(){
- jobRoleInput[0].selected = 'true'
- otherInput.style.display = 'none';
+function setDefaultJobRole() {
+  jobRoleInput[0].selected = 'true'
+  otherJobInput.style.display = 'none';
 }
 
-function setDefaultPayment(){
+function setDefaultPayment() {
   processPayment(payment.options[1]);
 }
-
 
 /**
  * 
