@@ -34,10 +34,38 @@ function isValidUsername(username) {
 /***
  * @function isValidEmail - Must be a valid email address
  * @property {string} email - email entered on form
- * @returns {boolean} - true if valid
+ * @returns {boolean} - true is pass
 ***/
 function isValidEmail(email) {
+  // basic email validator
   return /^[^@]+@[^@]+\.[a-z]{3}$/i.test(email);
+}
+
+/***
+ * @function isValidEmailRealtime - Checks email realtime
+ * @property {string} email - email entered on form
+ * @returns {number} - error number, -1 is pass
+***/
+function isValidEmailRealtime(email) {
+
+  const regexItems = [
+    /^[^@]+@[^@]+\.[a-z]{3}$/i,     // missing name@domain.com
+    /^[^@]+@[^@]+\.[a-z]{0,2}$/i,   // missing name@domain.
+    /^[^@]+@[^@]+$/i,               // missing name@domain
+    /^[^@]+@$/i,                    // missing name@
+    /^[^@]+$/i                      // missing name
+  ];
+
+  let index = 0;
+  for (index = 0; index < regexItems.length; index++) {
+    if (regexItems[index].test(email)) {
+      // test passed, break
+      break;
+    }
+  }
+
+  // return error code number
+  return index-1;
 }
 
 /***
@@ -201,7 +229,41 @@ function validate(validator, value, element) {
 emailInput.addEventListener('input', (e) => {
   // show email validation real-time
   const emailError = document.getElementById('mail-error');
-  validate(isValidEmail, emailInput.value, emailError);
+
+  const errorCode = isValidEmailRealtime(emailInput.value);
+  if (errorCode >= 0) {
+
+    // create error message
+    let errorMessage = `* Enter valid email, missing e.g.,`;
+    console.log(`Error Number ${errorCode}`);
+    switch (errorCode) {
+      case 0:
+        errorMessage += ` com`;
+        break;
+
+      case 1:
+        errorMessage += ` .com`;
+        break;
+
+      case 2:
+        errorMessage += ` domain.com`;
+        break;
+
+      case 3:
+        errorMessage += ` @domain.com`;
+        break;
+
+      case 4:
+        errorMessage += ` name@domain.com`;
+    }
+
+    emailError.innerHTML = errorMessage
+    emailError.style.display = 'block';
+  } else {
+    // basic email validation on submit
+    emailError.innerHTML = `* Enter valid email`;
+    emailError.style.display = 'none';
+  }
 });
 
 // add listener on job role title
